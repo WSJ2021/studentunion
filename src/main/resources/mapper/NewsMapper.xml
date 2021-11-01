@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.INewsDao">
+<!--新闻信息-->
+    <resultMap id="newsMap" type="com.student.union.entity.News">
+        <id property="newsId" column="news_id" jdbcType="INTEGER"/>
+        <result property="newsTitleOne" column="news_title_one" jdbcType="VARCHAR"/>
+        <result property="newsTitleTwo" column="news_title_two" jdbcType="VARCHAR"/>
+        <result property="newsAuthor" column="news_author" jdbcType="VARCHAR"/>
+        <result property="newsTime" column="news_time" jdbcType="TIMESTAMP"/>
+        <result property="newsOutline" column="news_outline" jdbcType="VARCHAR"/>
+        <collection property="pargers" ofType="com.student.union.entity.Paragr">
+            <id property="paragrId" column="paragr_id" jdbcType="INTEGER"/>
+            <result property="paragrContent" column="paragr_content" jdbcType="VARCHAR"/>
+            <result property="paragrNumber" column="paragr_number" jdbcType="VARCHAR"/>
+            <collection property="parImages" ofType="com.student.union.entity.Images">
+                <id property="imgId" column="img_id" jdbcType="INTEGER"/>
+                <result property="path" column="path" jdbcType="VARCHAR"/>
+                <result property="paragrNumber" column="paragr_number" jdbcType="INTEGER"/>
+            </collection>
+        </collection>
+    </resultMap>
+<!--查询新闻-->
+    <select id="getNews"  resultMap="newsMap" parameterType="String">
+        SELECT
+	    news.news_id,
+	    news.news_title_one,
+	    news.news_title_two,
+	    news.news_outline,
+	    news.news_time,
+	    news.news_author,
+	    paragr.paragr_id,
+	    paragr.paragr_content,
+	    paragr.paragr_number,
+	    images.img_id,
+	    images.paragr_number,
+        images.path
+        FROM
+	    news
+	    LEFT JOIN paragr ON paragr.news_id = news.news_id
+	    LEFT JOIN images ON paragr.paragr_number = images.paragr_number AND  paragr.news_id=images.news_id
+        Order By news.news_time Desc
+    </select>
+    <!--查询完整新闻-->
+    <select id="getNewsByOne"  resultMap="newsMap" parameterType="String">
+        SELECT
+	    news.news_id,
+	    news.news_title_one,
+	    news.news_title_two,
+	    news.news_outline,
+	    news.news_time,
+	    news.news_author,
+	    paragr.paragr_id,
+	    paragr.paragr_content,
+	    paragr.paragr_number,
+	    images.img_id,
+	    images.paragr_number,
+        images.path
+        FROM
+	    news
+	    LEFT JOIN paragr ON paragr.news_id = news.news_id
+	    LEFT JOIN images ON paragr.paragr_number = images.paragr_number AND  paragr.news_id=images.news_id
+        WHERE
+	    news.news_title_one like "%"#{newsTitleOne}"%"
+	    Order By news.news_time Desc
+    </select>
+    <!--根据新闻标题查新闻id-->
+    <select id="getNewsByTitle"  resultMap="newsMap" parameterType="String">
+        SELECT
+	    news_id,
+	    news_title_one,
+	    news_title_two,
+	    news_outline,
+	    news_time,
+	    news_author
+        FROM
+	    news
+	    WHERE
+	    news.news_title_one = #{newsTitleOne}
+    </select>
+    <!--根据id删除新闻标题-->
+    <delete id="delNews">
+        DELETE
+        FROM
+        news
+        WHERE
+	    news_id = #{newsId}
+    </delete>
+    <!--根据id删除新闻段落-->
+    <delete id="delParagr">
+        DELETE
+        FROM
+        paragr
+        WHERE
+	    news_id = #{newsId}
+    </delete>
+    <!--根据id删除新闻图片-->
+    <delete id="delPirture">
+        DELETE
+        FROM
+        images
+        WHERE
+	    news_id = #{newsId}
+    </delete>
+    <!--添加新闻标题-->
+    <insert id="addNews">
+    INSERT INTO
+        news
+        (
+	        news_title_one,
+	        news_title_two,
+	        news_time,
+	        news_author,
+	        news_outline)
+    VALUES
+	    (#{newsTitleOne,jdbcType=VARCHAR},
+	    #{newsTitleTwo,jdbcType=VARCHAR},
+	    #{newsTime,jdbcType=TIMESTAMP},
+	    #{newsAuthor,jdbcType=VARCHAR},
+	    #{newsOutline,jdbcType=VARCHAR})
+    </insert>
+    <!--添加新闻段落-->
+    <insert id="addParagr">
+    INSERT INTO
+        paragr
+        (
+            paragr_content,
+	        news_id,
+	        paragr_number)
+    VALUES
+	    (#{paragrContent,jdbcType=VARCHAR},
+	    #{newsId,jdbcType=VARCHAR},
+	    #{paragrNumber,jdbcType=VARCHAR})
+    </insert>
+    <!--添加新闻图片-->
+    <insert id="addPirture">
+    INSERT INTO
+        images
+        (
+            path,
+            news_id,
+            paragr_number)
+    VALUES
+	    (#{path,jdbcType=VARCHAR},
+	    #{newsId,jdbcType=VARCHAR},
+	    #{paragrNumber,jdbcType=TIMESTAMP})
+    </insert>
+
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.IDepartDao">
+<!--部门信息-->
+    <resultMap id="departMap" type="com.student.union.entity.Department">
+        <id property="departId" column="depart_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="departType" column="depart_type" jdbcType="VARCHAR"/>
+        <result property="departIntro" column="depart_introduce" jdbcType="VARCHAR"/>
+        <result property="image_url" column="images_url" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--所有部门信息-->
+    <resultMap id="allDepartMap" type="com.student.union.entity.Fdep">
+        <id property="fdepId" column="fdep_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="image_url" column="image_url" jdbcType="VARCHAR"/>
+        <collection property="children" ofType="com.student.union.entity.Department">
+            <id property="departId" column="depart_id" jdbcType="INTEGER"/>
+            <result property="name" column="names" jdbcType="VARCHAR"/>
+            <result property="departType" column="depart_type" jdbcType="VARCHAR"/>
+            <result property="departIntro" column="depart_introduce" jdbcType="VARCHAR"/>
+            <result property="image_url" column="images_url" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+    <!--按类型查部门-->
+    <select id="getDepart"  resultMap="departMap" parameterType="String">
+	SELECT
+	depart_id,
+    name,
+	depart_type,
+	depart_introduce
+	FROM
+	depart
+    WHERE
+	depart.depart_type = #{departType}
+    </select>
+    <!--查所有部门-->
+    <select id="allDepart"  resultMap="allDepartMap" >
+	SELECT
+	fdep.fdep_id,
+    fdep.name,
+    fdep.image_url,
+    depart.depart_id,
+    depart.name as names,
+	depart.depart_type,
+	depart.image_url as images_url,
+	depart.depart_introduce
+    FROM
+    fdep
+    LEFT JOIN depart ON fdep.name = depart.depart_type
+    </select>
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.IDebitDao">
+<!--借记单信息-->
+    <resultMap id="debitMap" type="com.student.union.entity.Debit">
+        <id property="debitId" column="debit_id" jdbcType="INTEGER"/>
+        <result property="debitGoodsName" column="debit_goods_name" jdbcType="VARCHAR"/>
+        <result property="debitOutPerson" column="debit_out_person" jdbcType="VARCHAR"/>
+        <result property="debitInPerson" column="debit_in_person" jdbcType="VARCHAR"/>
+        <result property="debitOutTime" column="debit_out_time" jdbcType="VARCHAR"/>
+        <result property="debitInTime" column="debit_in_time" jdbcType="VARCHAR"/>
+        <result property="debitDepart" column="debit_depart" jdbcType="VARCHAR"/>
+        <result property="debitState" column="debit_state" jdbcType="VARCHAR"/>
+        <result property="debitGoodsNumber" column="debit_goods_number" jdbcType="INTEGER"/>
+        <result property="debitInDepart" column="debit_in_depart" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <!--添加借记表-->
+    <insert id="addDebit">
+    INSERT INTO
+        debit
+        (
+            debit_goods_name,
+            debit_out_person,
+            debit_in_person,
+            debit_in_time,
+            debit_out_time,
+            debit_depart,
+            debit_goods_number,
+            debit_in_depart
+             )
+    VALUES
+	    (#{debitGoodsName,jdbcType=VARCHAR},
+	    #{debitOutPerson,jdbcType=VARCHAR},
+	    #{debitInPerson,jdbcType=VARCHAR},
+	    #{debitInTime,jdbcType=VARCHAR},
+	    #{debitOutTime,jdbcType=VARCHAR},
+	    #{debitDepart,jdbcType=VARCHAR},
+	    #{debitGoodsNumber,jdbcType=INTEGER},
+	    #{debitInDepart,jdbcType=VARCHAR})
+    </insert>
+    <!--根据id删除借记表-->
+    <delete id="delDebit">
+        DELETE
+        FROM
+        debit
+        WHERE
+	    debit_id = #{debitId}
+    </delete>
+    <!--改变借记表状态-->
+    <update id="isnDebit" >
+        UPDATE debit
+	    SET
+	    debit_state=#{debitState}
+        WHERE
+	   debit_id = #{debitId}
+    </update>
+
+    <!--根据物品搜索已归还借记表-->
+    <select id="igetDebitByGoods"  resultMap="debitMap" parameterType="String">
+        SELECT
+            debit_id,
+            debit_goods_name,
+            debit_goods_number,
+            debit_out_person,
+            debit_in_person,
+            debit_in_time,
+            debit_out_time,
+            debit_depart,
+            debit_state,
+            debit_in_depart
+        FROM
+	    debit
+	    where
+	    debit_goods_name like "%"#{debitGoodsName}"%"
+	    AND
+	    debit_depart like "%"#{debitDepart}"%"
+	    AND
+	    debit_state=1
+    </select>
+    <!--根据物品搜索未归还借记表-->
+    <select id="ngetDebitByGoods"  resultMap="debitMap" parameterType="String">
+        SELECT
+            debit_id,
+            debit_goods_name,
+            debit_goods_number,
+            debit_out_person,
+            debit_in_person,
+            debit_in_time,
+            debit_out_time,
+            debit_depart,
+            debit_state,
+            debit_in_depart
+        FROM
+	    debit
+	    where
+	    debit_goods_name like "%"#{debitGoodsName}"%"
+	    AND
+	    debit_depart like "%"#{debitDepart}"%"
+	    AND
+	    debit_state=0
+    </select>
+    <!--搜索未归还借记表-->
+    <select id="getNDebit"  resultMap="debitMap" parameterType="String">
+        SELECT
+            debit_id,
+            debit_goods_name,
+            debit_goods_number,
+            debit_out_person,
+            debit_in_person,
+            debit_in_time,
+            debit_out_time,
+            debit_depart,
+            debit_state,
+            debit_in_depart
+        FROM
+	    debit
+	    where
+	    debit_depart like "%"#{ debitDepart}"%"
+	     AND
+	    debit_state=0
+    </select>
+    <!--搜索归还借记表-->
+    <select id="getIDebit"  resultMap="debitMap" parameterType="String">
+        SELECT
+            debit_id,
+            debit_goods_name,
+            debit_goods_number,
+            debit_out_person,
+            debit_in_person,
+            debit_in_time,
+            debit_out_time,
+            debit_depart,
+            debit_state,
+            debit_in_depart
+        FROM
+	    debit
+	    where
+	    debit_depart like "%"#{ debitDepart}"%"
+	     AND
+	    debit_state=1
+    </select>
+
+</mapper>

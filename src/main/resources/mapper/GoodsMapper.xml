@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.IGoodsDao">
+<!--菜单信息-->
+    <resultMap id="goodsMap" type="com.student.union.entity.Goods">
+        <id property="goodsId" column="goods_id" jdbcType="INTEGER"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="goodsDepart" column="goods_depart" jdbcType="VARCHAR"/>
+        <result property="goodsPrice" column="goods_price" jdbcType="VARCHAR"/>
+        <result property="goodsBuyTime" column="goods_buy_time" jdbcType="TIMESTAMP"/>
+        <result property="goodsState" column="goods_state" jdbcType="VARCHAR"/>
+        <result property="goodsNumber" column="goods_number" jdbcType="INTEGER"/>
+        <result property="lentNumber" column="lent_number" jdbcType="INTEGER"/>
+    </resultMap>
+<!--添加物品-->
+    <insert id="addGoods">
+    INSERT INTO
+        goods
+        (
+            goods_name,
+            goods_depart,
+            goods_price,
+            goods_buy_time,
+            goods_number
+             )
+    VALUES
+	    (#{goodsName,jdbcType=VARCHAR},
+	    #{goodsDepart,jdbcType=VARCHAR},
+	    #{goodsPrice,jdbcType=VARCHAR},
+	    #{goodsBuyTime,jdbcType=TIMESTAMP},
+	    #{goodsNumber,jdbcType=VARCHAR})
+    </insert>
+    <!--根据id删除物品-->
+    <delete id="delGoods">
+        DELETE
+        FROM
+        goods
+        WHERE
+	    goods_id = #{goodsId}
+    </delete>
+    <!--改变物品状态-->
+    <update id="isnGoods" >
+        UPDATE goods
+	    SET
+	    goods_state=#{goodsState}
+        WHERE
+	   goods_id = #{goodsId}
+    </update>
+    <!--改变借出物品数量-->
+    <update id="cGoodsNumber" >
+        UPDATE goods
+	    SET
+	    lent_number=#{lentNumber}
+        WHERE
+	    goods_id = #{goodsId}
+    </update>
+    <!--根据部门搜索物品-->
+    <select id="getGoodsByDepart"  resultMap="goodsMap" parameterType="String">
+        SELECT
+         goods_id,
+	     goods_name,
+         goods_depart,
+         goods_price,
+         goods_buy_time,
+         goods_number,
+         lent_number,
+		 goods_state
+        FROM
+	    goods
+	    where
+	    goods_depart like "%"#{goodsDepart}"%"
+    </select>
+    <!--根据名称搜索物品-->
+    <select id="getGoodsByName"  resultMap="goodsMap" parameterType="String">
+        SELECT
+         goods_id,
+	     goods_name,
+         goods_depart,
+         goods_price,
+         goods_buy_time,
+         goods_number,
+		 goods_state,
+		 lent_number
+        FROM
+	    goods
+	    where
+	    goods_name like "%"#{goodsName}"%"
+    </select>
+    <!--根据id搜索物品-->
+    <select id="getGoodsById"  resultMap="goodsMap" parameterType="String">
+        SELECT
+         goods_id,
+	     goods_name,
+         goods_depart,
+         goods_price,
+         goods_buy_time,
+         goods_number,
+		 goods_state
+        FROM
+	    goods
+	    where
+	   goods_id = #{goodsId}
+    </select>
+
+
+</mapper>

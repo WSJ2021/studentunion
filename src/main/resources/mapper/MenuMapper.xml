@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.IMenuDao">
+<!--菜单信息-->
+    <resultMap id="menuMap" type="com.student.union.entity.Menu">
+        <id property="menuId" column="menu_id" jdbcType="INTEGER"/>
+        <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
+        <collection property="cmenus" ofType="com.student.union.entity.Cmenu">
+            <id property="cmenuId" column="cmenu_id" jdbcType="INTEGER"></id>
+            <result property="menuId" column="menu_id" jdbcType="INTEGER"></result>
+            <result property="cmenuName" column="cmenu_name" jdbcType="VARCHAR"></result>
+            <result property="paths" column="paths" jdbcType="VARCHAR"></result>
+        </collection>
+    </resultMap>
+<!--查询菜单-->
+    <select id="getmenu"  resultMap="menuMap" parameterType="String">
+    SELECT
+	    menu.menu_name,
+	    menu.menu_id,
+	    cmenu.cmenu_name,
+        cmenu.cmenu_id,
+        cmenu.menu_id,
+        cmenu.paths
+    FROM
+	    menu
+	LEFT JOIN posi_menu ON menu.menu_id = posi_menu.menu_id
+	LEFT JOIN cmenu ON posi_menu.cmenu_id = cmenu.cmenu_id
+    WHERE
+	    posi_menu.posi_id = #{posiId}
+    </select>
+
+
+
+</mapper>

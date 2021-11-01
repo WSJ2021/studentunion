@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.ICapitalDao">
+<!--菜单信息-->
+    <resultMap id="capitalMap" type="com.student.union.entity.Capital">
+        <id property="capitalId" column="capital_id" jdbcType="INTEGER"/>
+        <result property="capitalPerson" column="capital_person" jdbcType="VARCHAR"/>
+        <result property="capitalDetail" column="capital_detail" jdbcType="VARCHAR"/>
+        <result property="capitalTime" column="capital_time" jdbcType="VARCHAR"/>
+        <result property="capitalDepart" column="capital_depart" jdbcType="VARCHAR"/>
+        <result property="capitalMoney" column="capital_money" jdbcType="VARCHAR"/>
+        <result property="capitalState" column="capital_state" jdbcType="VARCHAR"/>
+        <result property="capitalActName" column="capital_act_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--添加资金申请表-->
+    <insert id="addCapital">
+    INSERT INTO
+        capital
+        (
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money
+             )
+    VALUES
+	    (#{capitalPerson,jdbcType=VARCHAR},
+	    #{capitalActName,jdbcType=VARCHAR},
+	    #{capitalDetail,jdbcType=VARCHAR},
+	    #{capitalTime,jdbcType=VARCHAR},
+	    #{capitalDepart,jdbcType=VARCHAR},
+	    #{capitalMoney,jdbcType=VARCHAR})
+    </insert>
+    <!--根据id修改资金申请表-->
+    <update id="upCapital" >
+        UPDATE capital
+	    SET
+	    capital_person=#{capitalPerson},
+	    capital_act_name=#{capitalActName},
+        capital_detail=#{capitalDetail},
+        capital_time=#{capitalTime},
+        capital_depart=#{capitalDepart},
+        capital_money=#{capitalMoney}
+        WHERE
+	     capital_id = #{capitalId}
+    </update>
+    <!--根据id删除资金申请表-->
+    <delete id="delCapital">
+        DELETE
+        FROM
+        capital
+        WHERE
+	    capital_id = #{capitalId}
+    </delete>
+    <!--改变资金申请表状态-->
+    <update id="isnCapital" >
+        UPDATE capital
+	    SET
+	    capital_state=#{capitalState}
+        WHERE
+	   capital_id = #{capitalId}
+    </update>
+    <!--搜索未通过资金申请表-->
+    <select id="getNCapital"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+	    where
+	    capital_state=0
+    </select>
+    <!--搜索通过资金申请表-->
+    <select id="getICapital"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+	    where
+	    capital_state=1
+    </select>
+    <!--按部门搜索通过资金申请表-->
+    <select id="igetCapitalByDep"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+	    where
+	    capital_depart = #{capitalDepart}
+	    AND
+	    capital_state != 0
+
+    </select>
+    <!--按名称搜索通过资金申请表-->
+    <select id="igetCapitalByName"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+	    where
+	    capital_act_name like "%"#{capitalActName}"%"
+	    AND
+	    capital_depart like "%"#{ capitalDepart}"%"
+	    AND
+	    capital_state!=0
+    </select>
+    <!--按申请人搜索通过资金申请表-->
+    <select id="igetCapitalByPer"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+        <where>
+            <if test="capitalPerson != null">
+                capital_act_name like "%"#{capitalActName}"%"
+            </if>
+            <if test="capitalPerson != null">
+                AND
+                capital_person like "%"#{ capitalPerson}"%"
+            </if>
+            <if test="capitalPerson == null">
+                capital_act_name like "%"#{capitalActName}"%"
+            </if>
+            <if test="capitalPerson == null">
+                AND
+                capital_person like "%"#{ capitalPerson}"%"
+            </if>
+            AND
+            capital_state!=0
+        </where>
+
+    </select>
+    <!--按申请人搜索未通过资金申请表-->
+    <select id="ngetCapitalByPer"  resultMap="capitalMap" >
+        SELECT
+        capital_id,
+        capital_person,
+        capital_act_name,
+        capital_detail,
+        capital_time,
+        capital_depart,
+        capital_money,
+        capital_state
+        FROM
+        capital
+        <where>
+            <if test="capitalPerson != null">
+                capital_act_name like "%"#{capitalActName}"%"
+            </if>
+            <if test="capitalPerson != null">
+                AND
+                capital_person like "%"#{ capitalPerson}"%"
+            </if>
+            <if test="capitalPerson == null">
+                capital_act_name like "%"#{capitalActName}"%"
+            </if>
+            <if test="capitalPerson == null">
+                AND
+                capital_person like "%"#{ capitalPerson}"%"
+            </if>
+            AND
+            capital_state =0
+        </where>
+
+    </select>
+    <!--按部门搜索未通过资金申请表-->
+    <select id="ngetCapitalByDep"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+	    where
+	    capital_depart = #{ capitalDepart}
+	    AND
+	    capital_state=0
+    </select>
+    <!--按名称搜索未通过资金申请表-->
+    <select id="ngetCapitalByName"  resultMap="capitalMap" >
+        SELECT
+            capital_id,
+            capital_person,
+            capital_act_name,
+            capital_detail,
+            capital_time,
+            capital_depart,
+            capital_money,
+            capital_state
+        FROM
+	    capital
+	    where
+	     capital_act_name like "%"#{capitalActName}"%"
+	    AND
+	    capital_depart like "%"#{ capitalDepart}"%"
+	     AND
+	    capital_state=0
+    </select>
+</mapper>

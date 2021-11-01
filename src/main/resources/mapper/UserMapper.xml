@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.IUserDao">
+<!--用户信息-->
+    <resultMap id="userMap" type="com.student.union.entity.User">
+        <id property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="userName" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="position" column="position" jdbcType="VARCHAR"/>
+        <result property="departValue" column="depart_value" jdbcType="VARCHAR"/>
+        <result property="grade" column="grade" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="posiId" column="posi_id" jdbcType="INTEGER"/>
+        <result property="userState" column="user_state" jdbcType="INTEGER"/>
+        <result property="photoPath" column="photo_path" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="userInfo">
+        user_id,
+        userName,
+        password,
+        grade,
+        phone,
+        sex,
+        position,
+        posi_id,
+        user_state,
+        depart_value,
+        photo_path
+    </sql>
+<!--用户登录-->
+    <select id="login"  resultMap="userMap" >
+    SELECT
+        user_id,
+        userName,
+        password,
+        grade,
+        phone,
+        sex,
+        position,
+        posi_id,
+        user_state,
+        depart_value
+<!--	<include refid="userInfo"></include>-->
+    FROM
+    user
+    WHERE
+	username = #{userName}
+	AND
+	password =#{password}
+	AND
+	user.user_state=0
+    </select>
+
+<!--用户注册-->
+    <insert id="addUser">
+    INSERT INTO
+    user
+    (username,
+     password,
+     grade,
+     phone,
+     sex,
+     depart_value,
+     photo_path,
+     position )
+    VALUES
+	(#{userName,jdbcType=VARCHAR},
+	#{password,jdbcType=VARCHAR},
+	#{grade,jdbcType=VARCHAR},
+	#{phone,jdbcType=VARCHAR},
+	#{sex,jdbcType=VARCHAR},
+	#{departValue,jdbcType=VARCHAR},
+	"/1612754018863.jpg",
+	"干事")
+
+    </insert>
+    <!--根据部门查用户-->
+    <select id="userByDepart"  resultMap="userMap" >
+        SELECT
+    	<include refid="userInfo"></include>
+        FROM
+        user
+        WHERE
+        depart_value = #{deparValue}
+    </select>
+    <!--查询所有人赋权用-->
+    <select id="userCon"  resultMap="userMap" >
+        SELECT
+        <include refid="userInfo"></include>
+        FROM
+        user
+        WHERE
+        posi_id <![CDATA[ <> ]]> 1
+    </select>
+    <!--查询所有部长副部-->
+    <select id="minister"  resultMap="userMap" >
+        SELECT
+        <include refid="userInfo"></include>
+        FROM
+        user
+        WHERE
+        posi_id=6
+        OR
+        posi_id=7
+    </select>
+    <!--部长查询该部门用户-->
+    <select id="getUserDepart"  resultMap="userMap" >
+        SELECT
+        <include refid="userInfo"></include>
+        FROM
+        user
+        WHERE
+        depart_value = #{deparValue}
+        and
+        posi_id=8
+    </select>
+    <!--改变用户状态-->
+    <update id="isnUser" >
+        UPDATE user
+	    SET
+	    user_state=#{userState}
+        WHERE
+	    user_id = #{userId};
+    </update>
+    <!--根据id查用户-->
+    <select id="getUserById"  resultMap="userMap" >
+        SELECT
+        <include refid="userInfo"></include>
+        FROM
+        user
+        WHERE
+        user_id = #{uderId}
+        AND
+        user.user_state=0
+    </select>
+    <!--修改个人用户信息-->
+    <update id="upUserInfo" >
+        UPDATE user
+	    SET
+        userName=#{userName},
+        password=#{password},
+        grade=#{grade},
+        phone=#{phone},
+        sex=#{sex},
+        depart_value=#{departValue},
+        photo_path = #{photoPath}
+        WHERE
+	    user_id = #{userId};
+    </update>
+    <!--管理员修改用户所有信息-->
+    <update id="upUser" >
+        UPDATE user
+	    SET
+        userName=#{userName},
+        password=#{password},
+        position=#{position},
+        grade=#{grade},
+        phone=#{phone},
+        sex=#{sex},
+        posi_id=#{posiId},
+        user_state=#{userState},
+        depart_value=#{departValue},
+        photo_path = #{photoPath}
+        WHERE
+	    user_id = #{userId};
+    </update>
+    <!--修改头像-->
+    <update id="addPhotoPath" >
+        UPDATE user
+	    SET
+	    photo_path = #{photoPath}
+        WHERE
+	    user_id = #{userId};
+    </update>
+    <!--删除用户-->
+    <delete id="delUserById">
+        DELETE
+        FROM
+        user
+        WHERE
+	    user_id = #{userId}
+    </delete>
+    <!--赋予权限-->
+    <update id="empower" >
+        UPDATE user
+        <set>
+	    <if test="position == '学生会主席'">
+            position=#{position},
+            posi_id=2,
+            depart_value='管理人员'
+        </if>
+        <if test="position == '学生会副主席'">
+            position=#{position},
+            posi_id=3,
+            depart_value='管理人员'
+        </if>
+        <if test="position == '团委第一副书记'">
+            position=#{position},
+            posi_id=4,
+            depart_value='管理人员'
+        </if>
+        <if test="position == '团委第二副书记'">
+            position=#{position},
+            posi_id=5,
+            depart_value='管理人员'
+        </if>
+        <if test="position== '部长'">
+            position=#{position},
+            posi_id=6
+        </if>
+        <if test="position== '副部长'">
+            position=#{position},
+            posi_id=7
+        </if>
+        </set>
+        WHERE
+	    user_id = #{userId}
+    </update>
+</mapper>

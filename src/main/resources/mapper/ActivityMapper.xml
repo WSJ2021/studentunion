@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.union.dao.IActivityDao">
+<!--菜单信息-->
+    <resultMap id="activityMap" type="com.student.union.entity.Activity">
+        <id property="actId" column="activity_id" jdbcType="INTEGER"/>
+        <result property="actName" column="act_name" jdbcType="VARCHAR"/>
+        <result property="actPlace" column="act_place" jdbcType="VARCHAR"/>
+        <result property="actApplyDepart" column="act_apply_depart" jdbcType="VARCHAR"/>
+        <result property="actApplyUser" column="act_apply_user" jdbcType="VARCHAR"/>
+        <result property="actContent" column="act_content" jdbcType="VARCHAR"/>
+        <result property="actCapital" column="act_capital" jdbcType="VARCHAR"/>
+        <result property="actStartTime" column="act_starttime" jdbcType="TIMESTAMP"/>
+        <result property="actEndTime" column="act_endtime" jdbcType="TIMESTAMP"/>
+        <result property="actApplyTime" column="act_apply_time" jdbcType="TIMESTAMP"/>
+        <result property="actAim" column="act_aim" jdbcType="VARCHAR"/>
+        <result property="actState" column="act_state" jdbcType="CHAR"/>
+    </resultMap>
+    <sql id="activityinfo">
+        activity_id,
+        act_name,
+        act_place,
+        act_apply_depart,
+        act_apply_user,
+        act_content,
+        act_capital,
+        act_starttime,
+        act_endtime,
+        act_apply_time,
+        act_aim,
+        act_state
+    </sql>
+<!--添加活动-->
+    <insert id="addAct">
+    INSERT INTO
+        activity
+        (
+            act_name,
+            act_place,
+            act_apply_depart,
+            act_apply_user,
+            act_content,
+            act_capital,
+            act_starttime,
+            act_endtime,
+            act_apply_time,
+            act_aim)
+    VALUES
+	    (#{actName,jdbcType=VARCHAR},
+	    #{actPlace,jdbcType=VARCHAR},
+	    #{actApplyDepart,jdbcType=VARCHAR},
+	    #{actApplyUser,jdbcType=VARCHAR},
+	    #{actContent,jdbcType=VARCHAR},
+	    #{actCapital,jdbcType=VARCHAR},
+	    #{actStartTime,jdbcType=TIMESTAMP},
+	    #{actEndTime,jdbcType=TIMESTAMP},
+	    #{actApplyTime,jdbcType=TIMESTAMP},
+	    #{actAim,jdbcType=VARCHAR})
+    </insert>
+    <!--根据id删除活动-->
+    <delete id="delAct">
+        DELETE
+        FROM
+        activity
+        WHERE
+	    activity_id = #{actId}
+    </delete>
+    <!--根据id修改活动-->
+    <update id="upAct" >
+        UPDATE activity
+	    SET
+	        act_name=#{actName},
+            act_place=#{actPlace},
+            act_apply_depart=#{actApplyDepart},
+            act_apply_user=#{actApplyUser},
+            act_content=#{actContent},
+            act_capital=#{actCapital},
+            act_starttime=#{actStartTime},
+            act_endtime=#{actEndTime},
+            act_apply_time=#{actApplyTime},
+            act_aim=#{actAim}
+        WHERE
+	        activity_id = #{actId};
+    </update>
+    <!--根据活动开始时间检索活动-->
+    <select id="getActByTime"  resultMap="activityMap" >
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        where
+        act_starttime like "%"#{actStartTime}"%"
+    </select>
+    <!--查询最近开始的活动-->
+    <select id="getActByStartTime"  resultMap="activityMap" >
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        Order By act_starttime Desc
+    </select>
+    <!--查询某部门所有审核通过的活动-->
+    <select id="getIActByDepart"  resultMap="activityMap">
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        where
+        act_apply_depart=#{actApplyDepart}
+        AND
+        act_state=1
+        OR
+        act_state=2
+    </select>
+    <!--查询某部门所有审核未通过的活动-->
+    <select id="getNActByDepart"  resultMap="activityMap" >
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        where
+        act_apply_depart=#{actApplyDepart}
+        AND
+        act_state=0
+    </select>
+    <!--查询所有审核通过的活动-->
+    <select id="getIAct"  resultMap="activityMap" >
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        where
+        act_state=1
+        OR
+        act_state=2
+    </select>
+    <!--查询所有未审核的活动-->
+    <select id="getNAct"  resultMap="activityMap" >
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        where
+        act_state=0
+    </select>
+    <!--审核活动-->
+    <update id="isnAct" >
+        UPDATE activity
+	    SET
+	    act_state=#{actState}
+        WHERE
+	   activity_id = #{actId};
+    </update>
+    <!--根据活动标题检索活动-->
+    <select id="getActByName"  resultMap="activityMap" >
+        SELECT
+        <include refid="activityinfo"></include>
+        FROM
+        activity
+        where
+        act_name like "%"#{actName}"%"
+    </select>
+
+</mapper>
