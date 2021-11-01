@@ -1,5 +1,5 @@
 package com.student.union.common;
-
+//改了
 /**
  * 统一了消息的标准
  */
